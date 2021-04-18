@@ -13,7 +13,6 @@
 #endif
 
 enum counter_states {counter_init, counter_reset, counter_wait, counter_dec, counter_dec_wait, counter_inc, counter_inc_wait} counter_state;
-unsigned char counter = 0x00;
 
 void counter_tick() {
     switch(counter_state){
@@ -72,29 +71,29 @@ void counter_tick() {
 
     switch(counter_state){
         case counter_init:
-            counter = 0x07;
+            PORTC = 0x07;
             break;
         case counter_reset:
-            counter = 0x00;
+            PORTC = 0x00;
             break;
         case counter_wait:
             break;
         case counter_dec:
-            if (counter > 0x00) {
-                counter = counter - 0x01;
+            if (PORTC > 0x00) {
+                PORTC = PORTC - 0x01;
             }
             break;
         case counter_dec_wait:
             break;
         case counter_inc:
-            if (counter < 0x09) {
-                counter = counter + 0x01;
+            if (PORTC < 0x09) {
+                PORTC = PORTC + 0x01;
             }
             break;
         case counter_inc_wait:
             break;
         default:
-            counter = 0x07;
+            PORTC = 0x07;
             break;
     }
 
@@ -109,7 +108,6 @@ int main(void) {
 
     while (1) {
         counter_tick();
-        PORTC = counter;
     }
     return 1;
 }
