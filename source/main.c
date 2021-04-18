@@ -17,7 +17,7 @@ enum lock_states {lock_init, lock_unlocked, lock_locked, lock_pass_hash, lock_pa
 void lock_tick() {
     switch(lock_state){
         case lock_init:
-            lock_state = lock_unlocked;
+            lock_state = lock_locked;
             break;
         case lock_unlocked:
             if (((PINA >> 7) & 0x01) == 1){
@@ -75,8 +75,10 @@ void lock_tick() {
             PORTB = 0x00; //locked
             break;
         case lock_unlocked:
+            PORTB = 0x01;
             break;
         case lock_locked:
+            PORTB = 0x00;
             break;
         case lock_pass_hash:
             break;
