@@ -20,7 +20,12 @@ void counter_tick() {
             counter_state = counter_wait;
             break;
         case counter_reset:
-            counter_state = counter_wait;
+            if ((PINA & 0x02) == 0x03){
+                counter_state = counter_reset;
+            }
+            else {
+                counter_state = counter_wait;
+            }
             break;
         case counter_wait:
             if ((PINA & 0x02) == 0x00){
