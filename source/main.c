@@ -12,7 +12,7 @@
 #include "simAVRHeader.h"
 #endif
 
-enum counter_states {counter_init, counter_reset, counter_wait, counter_dec, counter_dec_wait, counter_inc, counter_inc_wait} counter_state;
+enum counter_states {counter_init, counter_reset, counter_wait, counter_dec, counter_dec_wait, counter_inc, counter_inc_wait} counter_state = ;
 
 void counter_tick() {
     switch(counter_state){
@@ -20,7 +20,7 @@ void counter_tick() {
             counter_state = counter_wait;
             break;
         case counter_reset:
-            if ((PINA & 0x02) == 0x03){
+            if ((PINA & 0x03) == 0x03){
                 counter_state = counter_reset;
             }
             else {
@@ -28,13 +28,13 @@ void counter_tick() {
             }
             break;
         case counter_wait:
-            if ((PINA & 0x02) == 0x00){
+            if ((PINA & 0x03) == 0x00){
                 counter_state = counter_wait;
             }
-            else if ((PINA & 0x02) == 0x01){
+            else if ((PINA & 0x03) == 0x01){
                 counter_state = counter_inc;
             }
-            else if ((PINA & 0x02) == 0x02) {
+            else if ((PINA & 0x03) == 0x02) {
                 counter_state = counter_dec;
             }
             else {
@@ -45,10 +45,10 @@ void counter_tick() {
             counter_state = counter_dec_wait;
             break;
         case counter_dec_wait:
-            if ((PINA & 0x02) == 0x02) {
+            if ((PINA & 0x03) == 0x02) {
                 counter_state = counter_dec_wait;
             }
-            else if ((PINA & 0x02) == 0x03) {
+            else if ((PINA & 0x03) == 0x03) {
                 counter_state = counter_reset;
             }
             else {
@@ -59,10 +59,10 @@ void counter_tick() {
             counter_state = counter_inc_wait;
             break;
         case counter_inc_wait:
-            if ((PINA & 0x02) == 0x01) {
+            if ((PINA & 0x03) == 0x01) {
                 counter_state = counter_inc_wait;
             }
-            else if ((PINA & 0x02) == 0x03) {
+            else if ((PINA & 0x03) == 0x03) {
                 counter_state = counter_reset;
             }
             else {
@@ -73,7 +73,6 @@ void counter_tick() {
             counter_state = counter_init;
             break;
     }
-
     switch(counter_state){
         case counter_init:
             PORTC = 0x07;
