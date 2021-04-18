@@ -12,69 +12,83 @@
 #include "simAVRHeader.h"
 #endif
 
-enum led_states {led_init, led_one, led_one_wait, led_zero, led_zero_wait} led_state;
+enum counter_states {counter_init, counter_reset, counter_wait, counter_dec, counter_dec_wait, counter_inc, counter_inc_wait} counter_state;
 
-void led_tick() {
-    switch(led_state){
-        case led_init:
-            led_state = led_zero_wait;
+void counter_tick() {
+    switch(counter_state){
+        case counter_init:
+            counter_state = counter_wait;
             break;
-        case led_one:
-            if ((PINA & 0x01) == 1) {
-                led_state = led_one;
+        case counter_reset:
+            counter_state = counter_wait;
+            break;
+        case counter_wait:
+            if ((PINA & 0x02) == 0){
+                counter_state = counter_wait;
+            }
+            else if ((PINA & 0x02) == 1){
+                counter_state = counter_inc;
+            }
+            else if ((PINA & 0x02) == 2) {
+                counter_state = counter_dec;
             }
             else {
-                led_state = led_one_wait;
+                counter_state = counter_reset;
             }
             break;
-        case led_one_wait:
-            if ((PINA & 0x01) == 1) {
-                led_state = led_zero;
+        case counter_dec:
+            counter_state = counter_dec_wait;
+            break;
+        case counter_dec_wait:
+            if ((PINA & 0x02) == 2) {
+                counter_state = counter_dec_wait;
+            }
+            else if ((PINA & 0x02) == 3) {
+                counter_state = counter_reset;
             }
             else {
-                led_state = led_one_wait;
+                counter_state = counter_wait;
             }
             break;
-        case led_zero:
-            if ((PINA & 0x01) == 1) {
-                led_state = led_zero;
-            }
-            else {
-                led_state = led_zero_wait;
-            }
+        case counter_inc:
+            counter_state = counter_inc_wait;
             break;
-        case led_zero_wait:
-            if ((PINA & 0x01) == 1) {
-                led_state = led_one;
+        case counter_inc_wait:
+            if ((PINA & 0x02) == 1) {
+                counter_state = counter_inc_wait;
+            }
+            else if ((PINA & 0x02) == 3) {
+                counter_state = counter_reset;
             }
             else {
-                led_state = led_zero_wait;
+                counter_state = counter_wait;
             }
             break;
         default:
-            led_state = led_init;
+            counter_state = counter_init;
             break;
-
     }
 
-    switch(led_state){
-        case led_init:
-            PORTB = 0x01;
+    switch(counter_state){
+        case counter_init:
+            PORTC = 0x07;
             break;
-        case led_one:
-            PORTB = 0x02;
+        case counter_reset:
+            PORTC = 0x00;
             break;
-        case led_one_wait:
-            PORTB = 0x02;
+        case counter_wait:
             break;
-        case led_zero:
-            PORTB = 0x01;
+        case counter_dec:
+            if (PORTC > 0) PORTC -= 1;
             break;
-        case led_zero_wait:
-            PORTB = 0x01;
+        case counter_dec_wait:
+            break;
+        case counter_inc:
+            if (PORTC < 9) PORTC += 1;
+            break;
+        case counter_inc_wait:
             break;
         default:
-            PORTB = 0x01;
             break;
     }
 
@@ -83,12 +97,12 @@ void led_tick() {
 int main(void) {
     /* Insert DDR and PORT initializations */
     DDRA = 0x00; PORTA = 0xFF;
-    DDRB = 0xFF; PORTB = 0x00;
+    DDRC = 0xFF; PORTC = 0x00;
 
     /* Insert your solution below */
 
     while (1) {
-        led_tick();
+        counter_tick();
     }
     return 1;
 }
