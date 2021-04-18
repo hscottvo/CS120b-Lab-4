@@ -34,6 +34,7 @@ void led_tick() {
             else {
                 led_state = led_one_wait;
             }
+            break;
         case led_zero:
             if ((PINA & 0x01) == 1) {
                 led_state = led_zero;
