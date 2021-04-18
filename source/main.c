@@ -12,7 +12,7 @@
 #include "simAVRHeader.h"
 #endif
 
-enum counter_states {counter_init, counter_reset, counter_wait, counter_dec, counter_dec_wait, counter_inc, counter_inc_wait} counter_state = ;
+enum counter_states {counter_init, counter_reset, counter_wait, counter_dec, counter_dec_wait, counter_inc, counter_inc_wait} counter_state;
 
 void counter_tick() {
     switch(counter_state){
