@@ -1,7 +1,7 @@
 /*	Author: svo021
  *  Partner(s) Name: Scott Vo
  *	Lab Section:
- *	Assignment: Lab 4  Exercise 1
+ *	Assignment: Lab 4  Exercise 2
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
