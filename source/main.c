@@ -62,9 +62,11 @@ void lock_tick() {
         case lock_switch:
             if ((PORTB & 0x01) == 0x00) {
                 lock_state = lock_unlocked;
+                PORTB = 0x01;
             }
             else {
                 lock_state = lock_locked;
+                PORTB = 0x00;
             }
             break;
         default:
