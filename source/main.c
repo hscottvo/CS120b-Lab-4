@@ -80,12 +80,12 @@ void counter_tick() {
         case counter_wait:
             break;
         case counter_dec:
-            if (counter > 0) counter -= 1;
+            if (counter > 0x00) counter -= 1;
             break;
         case counter_dec_wait:
             break;
         case counter_inc:
-            if (counter < 9) counter += 1;
+            if (counter < 0x09) counter += 1;
             break;
         case counter_inc_wait:
             break;
