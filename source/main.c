@@ -20,7 +20,7 @@ void led_tick() {
             led_state = led_zero_wait;
             break;
         case led_one:
-            if (PINA & 0x01 == 1) {
+            if ((PINA & 0x01) == 1) {
                 led_state = led_one;
             }
             else {
@@ -28,14 +28,14 @@ void led_tick() {
             }
             break;
         case led_one_wait:
-            if (PINA & 0x01 == 1) {
+            if ((PINA & 0x01) == 1) {
                 led_state = led_zero;
             }
             else {
                 led_state = led_one_wait;
             }
         case led_zero:
-            if (PINA & 0x01 == 1) {
+            if ((PINA & 0x01) == 1) {
                 led_state = led_zero;
             }
             else {
@@ -43,7 +43,7 @@ void led_tick() {
             }
             break;
         case led_zero_wait:
-            if (PINA & 0x01 == 1) {
+            if ((PINA & 0x01) == 1) {
                 led_state = led_one;
             }
             else {
