@@ -43,28 +43,37 @@ void counter_tick() {
             }
             break;
         case counter_dec:
-            counter_state = counter_dec_wait;
-            break;
-        case counter_dec_wait:
-            if ((PINA & 0x03) == 0x02) {
+            if ((PINA & 0x03) == 0x03) {
+                counter_state = counter_reset;
+            } else {
                 counter_state = counter_dec_wait;
             }
-            else if ((PINA & 0x03) == 0x03) {
+            break;
+        case counter_dec_wait:
+            if ((PINA & 0x03) == 0x03) {
                 counter_state = counter_reset;
+            }
+            else if ((PINA & 0x03) == 0x02) {
+                counter_state = counter_dec_wait;
             }
             else {
                 counter_state = counter_wait;
             }
             break;
         case counter_inc:
-            counter_state = counter_inc_wait;
-            break;
-        case counter_inc_wait:
-            if ((PINA & 0x03) == 0x01) {
+            if ((PINA & 0x03) == 0x03){
+                counter_state = counter_reset;
+            } 
+            else {
                 counter_state = counter_inc_wait;
             }
-            else if ((PINA & 0x03) == 0x03) {
+            break;
+        case counter_inc_wait:
+            if ((PINA & 0x03) == 0x03) {
                 counter_state = counter_reset;
+            }
+            else if ((PINA & 0x03) == 0x01) {
+                counter_state = counter_inc_wait;
             }
             else {
                 counter_state = counter_wait;
