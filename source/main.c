@@ -89,6 +89,7 @@ void counter_tick() {
         case counter_inc_wait:
             break;
         default:
+            PORTC = 0x07;
             break;
     }
 
