@@ -87,7 +87,7 @@ int main(void) {
     /* Insert your solution below */
 
     while (1) {
-        led_tick()
+        led_tick();
     }
     return 1;
 }
