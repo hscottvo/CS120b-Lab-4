@@ -12,107 +12,97 @@
 #include "simAVRHeader.h"
 #endif
 
-enum counter_states {counter_init, counter_reset, counter_wait, counter_dec, counter_dec_wait, counter_inc, counter_inc_wait} counter_state;
+enum lock_states {lock_init, lock_unlocked, lock_locked, lock_pass_hash, lock_pass_hash_press, lock_pass_y, lock_switch} lock_state;
 
-void counter_tick() {
-    switch(counter_state){
-        case counter_init:
-            counter_state = counter_wait;
-	    PORTC = 0x07;
+void lock_tick() {
+    switch(lock_state){
+        case lock_init:
+            lock_state = lock_unlocked;
             break;
-        case counter_reset:
-            if ((PINA & 0x03) == 0x03){
-                counter_state = counter_reset;
+        case lock_unlocked:
+            if (((PINA >> 7) & 0x01) == 1){
+                lock_state = lock_locked;
             }
             else {
-                counter_state = counter_wait;
+                lock_state = lock_unlocked;
             }
             break;
-        case counter_wait:
-            if ((PINA & 0x03) == 0x00){
-                counter_state = counter_wait;
-            }
-            else if ((PINA & 0x03) == 0x01){
-                counter_state = counter_inc;
-            }
-            else if ((PINA & 0x03) == 0x02) {
-                counter_state = counter_dec;
+        case lock_locked:
+            lock_state = lock_pass_hash;
+            break;
+        case lock_pass_hash:
+            if (PINA ==  0x04) {
+                lock_state = lock_pass_hash_press;
             }
             else {
-                counter_state = counter_reset;
+                lock_state = lock_pass_hash;
             }
             break;
-        case counter_dec:
-            counter_state = counter_dec_wait;
-            break;
-        case counter_dec_wait:
-            if ((PINA & 0x03) == 0x02) {
-                counter_state = counter_dec_wait;
-            }
-            else if ((PINA & 0x03) == 0x03) {
-                counter_state = counter_reset;
+        case lock_pass_hash_press:
+            if (PINA == 0x04) {
+                lock_state = lock_pass_hash_press;
+            }else if (PINA == 0x00) {
+                lock_state = lock_pass_y;
             }
             else {
-                counter_state = counter_wait;
+                lock_state = lock_pass_hash;
             }
             break;
-        case counter_inc:
-            counter_state = counter_inc_wait;
-            break;
-        case counter_inc_wait:
-            if ((PINA & 0x03) == 0x01) {
-                counter_state = counter_inc_wait;
+        case lock_pass_y:
+            if (PINA == 0x00) {
+                lock_state = lock_pass_y;
             }
-            else if ((PINA & 0x03) == 0x03) {
-                counter_state = counter_reset;
+            else if (PINA == 0x02) {
+                lock_state = lock_switch;
             }
             else {
-                counter_state = counter_wait;
+                lock_state = lock_pass_hash;
+            }
+            break;
+        case lock_switch:
+            if ((PORTB & 0x01) == 0x01) {
+                lock_state = lock_unlocked;
+            }
+            else {
+                lock_state = lock_locked;
             }
             break;
         default:
-            counter_state = counter_init;
             break;
     }
-    switch(counter_state){
-        case counter_init:
-            PORTC = 0x07;
+    switch(lock_state){
+        case lock_init:
+            PORTB = 0x00;
             break;
-        case counter_reset:
-            PORTC = 0x00;
+        case lock_unlocked:
             break;
-        case counter_wait:
+        case lock_locked:
             break;
-        case counter_dec:
-            if (PORTC > 0x00) {
-                PORTC = PORTC - 1;
-            }
+        case lock_pass_hash:
             break;
-        case counter_dec_wait:
+        case lock_pass_hash_press:
             break;
-        case counter_inc:
-            if (PORTC < 0x09) {
-                PORTC = PORTC + 1;
-            }
+        case lock_pass_y:
             break;
-        case counter_inc_wait:
+        case lock_switch:
+            PORTB = 0x01;
             break;
         default:
-            PORTC = 0x07;
             break;
     }
-
+    PORTC = lock_state;
 }
 
 int main(void) {
     /* Insert DDR and PORT initializations */
     DDRA = 0x00; PORTA = 0xFF;
+    DDRB = 0xFF; PORTB = 0x00
     DDRC = 0xFF; PORTC = 0x00;
 
     /* Insert your solution below */
 
     while (1) {
-        counter_tick();
+        lock_tick();
     }
     return 1;
 }
