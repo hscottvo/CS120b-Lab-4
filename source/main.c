@@ -34,7 +34,7 @@ void led_tick() {
             else {
                 led_state = led_one_wait;
             }
-        case led_zero;
+        case led_zero:
             if (PINA & 0x01 == 1) {
                 led_state = led_zero;
             }
@@ -42,7 +42,7 @@ void led_tick() {
                 led_state = led_zero_wait;
             }
             break;
-        case led_zero_wait;
+        case led_zero_wait:
             if (PINA & 0x01 == 1) {
                 led_state = led_one;
             }
@@ -66,10 +66,10 @@ void led_tick() {
         case led_one_wait:
             PORTB = 0x02;
             break;
-        case led_zero;
+        case led_zero:
             PORTB = 0x01;
             break;
-        case led_zero_wait;
+        case led_zero_wait:
             PORTB = 0x01;
             break;
         default:
