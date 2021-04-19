@@ -36,7 +36,10 @@ void lock_tick() {
             if (PINA ==  pass[i]) {
                 lock_state = lock_pass_press;
                 i = i + 1;
-                if(i >= 4) lock_state = lock_switch;
+                if(i >= 3) lock_state = lock_switch;
+            }
+            else if (PINA == 0x00) {
+                lock_state = lock_pass;
             }
             else {
                 lock_state = lock_pass;
@@ -51,7 +54,7 @@ void lock_tick() {
             }
             else {
                 lock_state = lock_pass;
-                i = 0x00;
+                // i = 0x00;
             }
             break;
         case lock_switch:

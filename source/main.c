@@ -1,7 +1,7 @@
 /*	Author: svo021
  *  Partner(s) Name: Scott Vo
  *	Lab Section:
- *	Assignment: Lab 4  Exercise 3
+ *	Assignment: Lab 4  Exercise 5
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -12,7 +12,9 @@
 #include "simAVRHeader.h"
 #endif
 
-enum lock_states {lock_init, lock_unlocked, lock_locked, lock_pass_hash, lock_pass_hash_press, lock_pass_y, lock_switch} lock_state;
+enum lock_states {lock_init, lock_unlocked, lock_locked, lock_pass, lock_pass_press, lock_switch} lock_state;
+unsigned char pass[4] = {0x04, 0x01, 0x02, 0x01};
+unsigned char i = 0x00;
 
 void lock_tick() {
     switch(lock_state){
@@ -28,38 +30,32 @@ void lock_tick() {
             }
             break;
         case lock_locked:
-            lock_state = lock_pass_hash;
+            lock_state = lock_pass;
             break;
-        case lock_pass_hash:
-            if (PINA ==  0x04) {
-                lock_state = lock_pass_hash_press;
+        case lock_pass:
+            if (PINA ==  pass[i]) {
+                lock_state = lock_pass_press;
+                i = i + 1;
+                if(i >= 4) lock_state = lock_switch;
             }
             else {
-                lock_state = lock_pass_hash;
+                lock_state = lock_pass;
+                i = 0x00;
             }
             break;
-        case lock_pass_hash_press:
-            if (PINA == 0x04) {
-                lock_state = lock_pass_hash_press;
+        case lock_pass_press:
+            if (PINA == pass[i-1]) {
+                lock_state = lock_pass_press;
             }else if (PINA == 0x00) {
-                lock_state = lock_pass_y;
+                lock_state = lock_pass;
             }
             else {
-                lock_state = lock_pass_hash;
-            }
-            break;
-        case lock_pass_y:
-            if (PINA == 0x00) {
-                lock_state = lock_pass_y;
-            }
-            else if (PINA == 0x02) {
-                lock_state = lock_switch;
-            }
-            else {
-                lock_state = lock_pass_hash;
+                lock_state = lock_pass;
+                i = 0x00;
             }
             break;
         case lock_switch:
+            i = 0x00;
             if ((PORTB & 0x01) == 0x00) {
                 lock_state = lock_unlocked;
                 PORTB = 0x01;
@@ -82,19 +78,15 @@ void lock_tick() {
         case lock_locked:
             PORTB = 0x00;
             break;
-        case lock_pass_hash:
+        case lock_pass:
             break;
-        case lock_pass_hash_press:
-            break;
-        case lock_pass_y:
+        case lock_pass_press:
             break;
         case lock_switch:
-            PORTB = 0x01;
             break;
         default:
             break;
     }
-    PORTC = lock_state;
 }
 
 int main(void) {
