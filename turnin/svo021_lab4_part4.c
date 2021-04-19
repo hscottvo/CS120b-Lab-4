@@ -24,7 +24,7 @@ void lock_tick() {
                 lock_state = lock_locked;
             }
             else {
-                lock_state = lock_unlocked;
+                lock_state = lock_pass_hash;
             }
             break;
         case lock_locked:
